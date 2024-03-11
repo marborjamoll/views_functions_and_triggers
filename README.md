@@ -49,3 +49,63 @@ FROM view_employee_department
 WHERE department_name = 'IT';
 ```
 This query selects all columns from the `view_employee_department` where the `department_name` is "IT". Note that for this query to work as intended, the `view_employee_department` view must be correctly defined to include the `department_name` field, which relates to departments including an "IT" department.
+
+## Functions exercises
+### Exercise 1: Create a Function to Check Prime Numbers
+We need to write a PL/pgSQL function `is_prime(n integer)` that returns true if the given number is a prime number and false otherwise.
+``` sql
+CREATE OR REPLACE FUNCTION is_prime(n integer) RETURNS boolean AS $$
+DECLARE
+    i integer;
+BEGIN
+    IF n <= 1 THEN
+        RETURN false;
+    END IF;
+    FOR i IN 2..sqrt(n) LOOP
+        IF n % i = 0 THEN
+            RETURN false;
+        END IF;
+    END LOOP;
+    RETURN true;
+END;
+$$ LANGUAGE plpgsql;
+```
+
+To use this function, you can execute a query like:
+``` sql 
+SELECT is_prime(5); -- Returns true  
+SELECT is_prime(4); -- Returns false
+```
+
+### Exercise 2: Modify the Square Function
+The original `square` function was defined to accept and return a `numeric`. The task is to modify it to accept and return an `integer`.
+``` sql
+CREATE OR REPLACE FUNCTION square(x integer) RETURNS integer AS $$
+BEGIN
+    RETURN x * x;
+END;
+$$ LANGUAGE plpgsql;
+```
+Now, the `square` function works with integer values:
+``` sql
+SELECT square(5); -- Returns 25
+```
+
+### Exercise 3: Create a Set-Returning Function
+The task is to write a function `even_numbers(n int)` that returns a set of even numbers from 2 up to `n`.
+``` sql
+CREATE OR REPLACE FUNCTION even_numbers(n int) RETURNS SETOF int AS $$
+BEGIN
+    RETURN QUERY SELECT generate_series(2, n, 2);
+END;
+$$ LANGUAGE plpgsql;
+```
+This function uses `generate_series(start, stop, step)` to generate a series of even numbers starting from 2 up to `n`, stepping by 2 to ensure the numbers are even.
+
+To use this function:
+``` sql
+SELECT  *  FROM even_numbers(10);
+```
+This will return the even numbers from 2 to 10.
+
+These exercises cover creating basic functions, modifying them to change their input and output types, and creating set-returning functions in PostgreSQL. These skills are fundamental to effectively utilizing PostgreSQL's powerful function capabilities.
